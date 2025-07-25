@@ -1,18 +1,20 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-import { useNotificationStore } from '../stores/notification';
+import { useNotificationStore } from '../stores/notification'; // For displaying global notifications
 
-const notificationStore = useNotificationStore();
+const notificationStore = useNotificationStore(); // Initialize notification store
 
+// Reactive object for the contact form fields
 const form = ref({
   name: '',
   email: '',
   message: ''
 });
 
+// Function to handle form submission
 const submitForm = async () => {
-  // Basic validation
+  // Basic client-side validation
   if (!form.value.name || !form.value.email || !form.value.message) {
     notificationStore.showNotification('Please fill in all fields.', 'error');
     return;
@@ -23,9 +25,10 @@ const submitForm = async () => {
   }
 
   try {
+    // Send form data as JSON to the backend's /contact endpoint
     await axios.post('/contact', form.value);
-    notificationStore.showNotification('Your message has been sent successfully!', 'success');
-    // Clear form
+    notificationStore.showNotification('Your message has been sent successfully! We will get back to you soon.', 'success');
+    // Clear form fields after successful submission
     form.value = { name: '', email: '', message: '' };
   } catch (error) {
     console.error('Error sending contact message:', error);
@@ -35,7 +38,7 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <div class="container mx-auto p-4 max-w-lg">
+  <div class="container mx-auto p-4 max-w-lg py-12">
     <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Contact Us</h1>
     <form @submit.prevent="submitForm" class="bg-white rounded-lg shadow-lg p-8">
       <div class="mb-4">
