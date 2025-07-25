@@ -1,21 +1,24 @@
 <script setup>
-import { useCartStore } from '../stores/cart';
-import { RouterLink } from 'vue-router';
-import axios from 'axios'; // For image URL prefixing
+import { useCartStore } from '../stores/cart'; // Import the Pinia cart store
+import { RouterLink } from 'vue-router'; // For navigation
+import axios from 'axios'; // For constructing full image URLs
 
-const cartStore = useCartStore();
+const cartStore = useCartStore(); // Initialize the cart store
 
+// Function to update item quantity from input field
 const updateItemQuantity = (productId, event) => {
-  const newQuantity = parseInt(event.target.value, 10);
-  cartStore.updateQuantity(productId, newQuantity);
+  const newQuantity = parseInt(event.target.value, 10); // Parse input value to integer
+  cartStore.updateQuantity(productId, newQuantity); // Call store action to update quantity
 };
 
-// Compute the full image URL
+// Computed property to get the full image URL, handling local uploads and fallbacks
 const fullImageUrl = (url) => {
   if (url && url.startsWith('/uploads/')) {
+    // If it's an uploaded image, prepend the backend base URL
     return `${axios.defaults.baseURL}${url}`;
   }
-  return '/src/assets/images/default-product.png'; // Fallback
+  // Fallback to a local placeholder image if no valid URL or not an uploaded image
+  return '/src/assets/images/default-product.png';
 };
 </script>
 
@@ -23,10 +26,12 @@ const fullImageUrl = (url) => {
   <div class="container mx-auto p-4">
     <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Your Shopping Cart ({{ cartStore.itemCount }} items)</h1>
 
+    <!-- Display message if cart is empty -->
     <div v-if="cartStore.items.length === 0" class="text-center text-gray-500 text-lg py-12 bg-white rounded-lg shadow-md">
       Your cart is empty. <RouterLink to="/products" class="text-blue-600 hover:underline font-semibold">Start shopping!</RouterLink>
     </div>
 
+    <!-- Display cart contents if not empty -->
     <div v-else class="bg-white rounded-lg shadow-lg p-6">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -65,6 +70,7 @@ const fullImageUrl = (url) => {
         </table>
       </div>
 
+      <!-- Cart Summary and Actions -->
       <div class="mt-8 flex flex-col md:flex-row justify-end items-center space-y-4 md:space-y-0 md:space-x-4">
         <span class="text-3xl font-bold text-gray-800">Total: Ksh {{ cartStore.cartTotal.toFixed(2) }}</span>
         <button @click="cartStore.clearCart()"
